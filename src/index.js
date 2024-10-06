@@ -9,6 +9,7 @@ const middlewareLogRequest = require('./middleware/logs');
 
 app.use (middlewareLogRequest);
 app.use(express.json());
+app.use(express.static('public'));
 
 app.use('/users', userRoutes);
 

@@ -2,7 +2,7 @@ const UserModel = require('../models/users');
 
 const getAllUsers = async (req, res) => {
     try {
-        const data = await UserModel.getAllUsers();
+        const [data] = await UserModel.getAllUsers();
     
         res.json({
             message : 'Get all users success',
@@ -16,31 +16,63 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-const createNewUser = (req, res) => {
-    console.log(req.body);
-    res.json({
-        message: 'Create new users success',
-        data: req.body
-    })
+const createNewUser = async(req, res) => {
+    const {body} = req;
+    //Validasi
+    if (!body.name || !body.email || !body.address) {
+        return res.status(400).json({
+            message: 'Anda tidak mengisikan data yang benar',
+            data: null
+        });
+    }
+    
+    try {
+        await UserModel.createNewUser(body);
+        res.status(201).json({
+            message: 'Create new users success',
+            data: body
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error',
+            ServerMessage: error
+        })
+    }
 }
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
     const {id} = req.params;
-    console.log('id:', id);
-    res.json({
-        message: 'Update user success',
-        data: req.body
-    })
+    const {body} = req;
+    try {
+        await UserModel.updateUser(body, id);
+        res.status(201).json({
+            message: 'Update user success',
+            data: {
+                id: id,
+                ...body
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error',
+            ServerMessage: error
+        })
+    }
 }
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
     const {id} = req.params;
-    res.json({
-        message: 'Delete user success',
-        data: {
-            id: id
-        }
-    })
+    try {
+        await UserModel.deleteUser(id);
+        res.json({
+            message: 'Delete user success'
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error',
+            ServerMessage: error
+        })
+    }
 }
 
 module.exports = {
