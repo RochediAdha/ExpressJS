@@ -1,22 +1,17 @@
+require('dotenv').config()
+const PORT = process.env.PORT || 8080
+
 const express = require('express')
 const app = express()
-const port = 3000
 
-const userRoutes = require('./routes/users.js');
+const userRoutes = require('./routes/users');
+const middlewareLogRequest = require('./middleware/logs');
+
+app.use (middlewareLogRequest);
+app.use(express.json());
 
 app.use('/users', userRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.get('/chedy', (req, res) => {
-  res.json({
-    'nama': 'chedy',
-    'prodi': 'Informatika'
-  })
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}`)
+});
